@@ -99,7 +99,6 @@ function calculatePayroll(employees){
 }
 
  function findEmployeeByFirstName(employees, data){
-    //createEmployeeRecords(testSubject);
    let employee = employees.find( ({ firstName }) => firstName === data );
    return employee
    }
