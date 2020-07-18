@@ -43,28 +43,44 @@ function createTimeOutEvent(record, date) {
     return record;
 }
 
-function hoursWorkedOnDate(record, date) {
-    let time = (record.timeOutEvents[0].hour - record.timeInEvents[0].hour) / 100;
-    return time;
+function hoursWorkedOnDate(employee, soughtDate) {
+    let inEvent = employee.timeInEvents.find(function(e){
+        return e.date === soughtDate
+    })
+
+    let outEvent = employee.timeOutEvents.find(function(e){
+        return e.date === soughtDate
+    })
+
+    return (outEvent.hour - inEvent.hour) / 100
 }
 
-function wagesEarnedOnDate(record, date) {
-    let hours = hoursWorkedOnDate(record, date);
-    return hours * record.payPerHour;
+function wagesEarnedOnDate (employee, dateSought) {
+    let rawWage = hoursWorkedOnDate(employee, dateSought)
+        * employee.payPerHour
+    return parseFloat(rawWage.toString())
 }
 
-function allWagesFor(record) {
-    return 378;
+function allWagesFor(employee) {
+    let eligibleDates = employee.timeInEvents.map(function(e){
+        return e.date
+    })
+
+    let payable = eligibleDates.reduce(function(memo, d){
+        return memo + wagesEarnedOnDate(employee, d)
+    }, 0)
+
+    return payable
 }
 
-function findEmployeeByFirstName(records, firstName) {
-    return {familyName: 'Laufeysson-Odinsson'};
+function findEmployeeByFirstName(srcArray, firstName) {
+  return srcArray.find(function(rec){
+    return rec.firstName === firstName
+  })
 }
 
-function calculatePayroll(records) {
-    if (records.length > 3) {
-        return 11880;
-    } else {
-        return 756;
-    }
+function calculatePayroll(arrayOfEmployeeRecords) {
+    return arrayOfEmployeeRecords.reduce(function(memo, rec) {
+        return memo + allWagesFor(rec)
+    }, 0)
 }
